@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>刮刮乐</title>
+    <style>
+        canvas {
+            border: 1px solid #000;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="myCanvas" width="300" height="300"></canvas>
+    <script>
+        var canvas = document.getElementById('myCanvas');
+        var ctx = canvas.getContext('2d');
+        var img = new Image();
+        var lastX, lastY, nowX, nowY;
+        function init() {
+            var randomNum = Math.random();
+            if (randomNum > 0.5) {
+                img.src = 'baozou1.png';
+            } else {
+                img.src = 'baozou2.jpg';
+            }
+            img.onload = function () {
+                canvas.style.backgroundImage = 'url(' + img.src + ')';
+                canvas.style.backgroundSize = '300px 300px';
+                ctx.globalCompositeOperation = 'destination-out';
+                canvas.addEventListener('mousedown', downFun, false);
+            }
+            ctx.fillStyle = '#ccc';
+            ctx.fillRect(0, 0, 300, 300);
+        }
+        init();
+        function downFun(e) {
+            lastX = e.clientX;
+            lastY = e.clientY;
+            document.addEventListener('mousemove', moveFun, false);
+            document.addEventListener('mouseup', upFun, false);
+        }
+        function moveFun(e) {
+            nowX = e.clientX;
+            nowY = e.clientY;
+            ctx.beginPath();
+            ctx.fillStyle = 'red';
+            ctx.lineWidth = 40;
+            ctx.moveTo(lastX, lastY);
+            ctx.lineTo(nowX, nowY);
+            ctx.stroke();
+            ctx.arc(nowX, nowY, 20, 0, Math.PI * 2);
+            ctx.fill();
+            lastX = nowX;
+            lastY = nowY;
+        }
+        function upFun() {
+            document.removeEventListener('mousemove', moveFun, false);
+            document.removeEventListener('mousedown', downFun, false);
+            clearAll();
+        }
+        function clearAll() {
+            var d = ctx.getImageData(0, 0, 300, 300);
+            var len = d.data.length;
+            var c = 0;
+            for (var i = 0; i < len; i += 4) {
+                if (d.data[i] == 0) {
+                    c++;
+                }
+            }
+            if (c > 300 * 300 * 0.7) {
+                ctx.clearRect(0, 0, 300, 300);
+            }
+        }
+        //小方块运动
+        // var y = 50;
+        // function draw(y) {
+        //     ctx.fillRect(100, y, 50, 50);
+        // }
+        // var timer = setInterval(function () {
+        //     ctx.clearRect(0, 0, 500, 500);
+        //     draw(y);
+        //     y += 10;
+        //     if(y > 450) {
+        //         clearInterval(timer);
+        //         ctx.fillRect(100, 450, 50, 50);
+        //     }
+        // }, 50)
+    </script>
+</body>
+
+</html>
